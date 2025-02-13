@@ -51,7 +51,7 @@ int RunNumber(int n, int A[]) {
     return series;
 }
 
-void PrintMass(int n, int A[]) {
+void PrintMas(int n, int A[]) {
     for (int i = 0; i < n; i++) {
         printf("%d ", A[i]);
     }
@@ -69,11 +69,12 @@ int selectSort(int n, int arr[]) {
                 minInd = j;
                 C++;
             }
-            int temp = arr[i];
-            arr[i] = arr[minInd];
-            arr[minInd] = temp;
-            M += 3;
         }
+        
+        int temp = arr[i];
+        arr[i] = arr[minInd];
+        arr[minInd] = temp;
+        M += 3;
     }
 
     return (M + C);
@@ -85,17 +86,17 @@ int improvedSelectSort(int n, int arr[]) {
     for (int i = 0; i < n - 1; i++) {
         int minInd = i;
         for (int j = i + 1; j < n; j++) {
+            C++;
             if (arr[j] < arr[minInd]) {
                 minInd = j;
-                C++;
             }
-
-            if (arr[j] != arr[minInd]) {
-                int temp = arr[i];
-                arr[i] = arr[minInd];
-                arr[minInd] = temp;
-                M += 3;
-            }
+        }
+        C++;
+        if (arr[j] != arr[minInd]) {
+            int temp = arr[i];
+            arr[i] = arr[minInd];
+            arr[minInd] = temp;
+            M += 3;
         }
     }
 
@@ -141,32 +142,32 @@ int main() {
     // // Incremental array checks
     // FillInc(n, A);
     // printf("\nIncremental array:\n");
-    // PrintMass(n, A);
+    // PrintMas(n, A);
     // printf("Run number: %d, Checksum: %d\n", RunNumber(n, A), CheckSum(n, A));
     // selectSort(n, A);
     // printf("\nSorted incremental array:\n");
-    // PrintMass(n, A);
+    // PrintMas(n, A);
     // printf("Run number: %d, Checksum: %d\n", RunNumber(n, A), CheckSum(n, A));
     
     // // Decremental array checks
     // FillDec(n, A);
     // printf("\nDecremental array:\n");
-    // PrintMass(n, A);
+    // PrintMas(n, A);
     // printf("Run number: %d, Checksum: %d\n", RunNumber(n, A), CheckSum(n, A));
     // selectSort(n, A);
     // printf("\nSorted decremental array:\n");
-    // PrintMass(n, A);
+    // PrintMas(n, A);
     // printf("Run number: %d, Checksum: %d\n", RunNumber(n, A), CheckSum(n, A));
     
     
     // // Random array checks
     // FillRand(n, A);
     // printf("\nRandom array:\n");
-    // PrintMass(n, A);
+    // PrintMas(n, A);
     // printf("Run number: %d, Checksum: %d\n", RunNumber(n, A), CheckSum(n, A));
     // selectSort(n, A);
     // printf("\nSorted random array:\n");
-    // PrintMass(n, A);
+    // PrintMas(n, A);
     // printf("Run number: %d, Checksum: %d\n", RunNumber(n, A), CheckSum(n, A));
     
     return 0;
