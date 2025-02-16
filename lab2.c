@@ -26,7 +26,6 @@ void FillDec(int n, int A[]) {
 }
 
 void FillRand(int n, int A[]) {
-    srand(time(NULL));
     for (int i = 0; i < n; i++) {
         A[i] = rand() % 100;
     }
@@ -65,9 +64,15 @@ int bubbleSort(int n, int arr[]) {
     for (int i = 0; i < n - 1; i++) {
         for (int j = n - 1; j > i; j--) {
             C++;
-            if (arr[j] < arr[i]) {
-                int temp = arr[i];
-                arr[i] = arr[j];
+            // if (arr[j] < arr[i]) {
+            //     int temp = arr[i];
+            //     arr[i] = arr[j];
+            //     arr[j] = temp;
+            //     M += 3;
+            // }
+            if (arr[j] < arr[j - 1]) { 
+                int temp = arr[j - 1];
+                arr[j - 1] = arr[j];
                 arr[j] = temp;
                 M += 3;
             }
@@ -81,13 +86,15 @@ int bubbleSort(int n, int arr[]) {
 
 
 void printData(int n, int arr[]) {
+    srand(time(NULL));
+
     printf("|  N  |  M+C theor.  |       Mfact + Cfact       |\n");
     printf("|     |              |  Dec.  |  Rand.  |  Inc.  |\n");
 
     for (int n = 100; n <= 500; n += 100) {
         int A[n];
         int C = n * (n - 1) / 2;
-        int M = n*n;
+        int M = 3*C;
         int Ttheor = M + C;
 
         FillDec(n, A);
