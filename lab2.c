@@ -111,7 +111,7 @@ void printData(int n, int arr[]) {
 }
 
 int main() { 
-    int n = 10, A[n];
+    int n = 10, A[10];
     
     // Incremental array checks
     FillInc(n, A);

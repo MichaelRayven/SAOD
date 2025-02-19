@@ -92,7 +92,7 @@ int improvedSelectSort(int n, int arr[]) {
             }
         }
         C++;
-        if (arr[j] != arr[minInd]) {
+        if (arr[i] != arr[minInd]) {
             int temp = arr[i];
             arr[i] = arr[minInd];
             arr[minInd] = temp;
@@ -133,7 +133,7 @@ void printData(int n, int arr[]) {
 
 int main() {
     int n = 10;
-    int A[n];
+    int A[10];
     
     printData(n, A);
 
