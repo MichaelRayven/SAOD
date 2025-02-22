@@ -1,8 +1,11 @@
 #include <SDL3/SDL.h>
+#include <SDL3_ttf/SDL_ttf.h>
 #include <stdio.h>
 
+static SDL_Texture *texture = NULL;
+
 void DrawGraph(SDL_Renderer* renderer) {
-    int data[] = {10, 20, 30, 40, 50, 60, 70, 80, 90, 100};
+    int data[] = {20, 20, 30, 40, 50, 60, 70, 80, 90, 100};
     int dataSize = sizeof(data) / sizeof(data[0]);
 
     int margin = 50;
@@ -15,6 +18,8 @@ void DrawGraph(SDL_Renderer* renderer) {
     SDL_RenderLine(renderer, margin, margin, margin, 600 - margin); // Y-axis
     SDL_RenderLine(renderer, margin, 600 - margin, 800 - margin, 600 - margin); // X-axis
 
+    
+
     // Draw bars
     for (int i = 0; i < dataSize; i++) {
         int barHeight = (data[i] * graphHeight) / 100;
@@ -26,13 +31,11 @@ void DrawGraph(SDL_Renderer* renderer) {
         };
         SDL_SetRenderDrawColor(renderer, 0, 0, 255, 255);
         SDL_RenderFillRect(renderer, &barRect);
+        SDL_RenderTexture(renderer, texture, NULL, &barRect);
     }
 }
 
 int main(int argc, char* argv[]) {
-    int data[] = {10, 20, 30, 40, 50, 60, 70, 80, 90, 100};
-    int dataSize = sizeof(data) / sizeof(data[0]);
-
     if (SDL_Init(SDL_INIT_VIDEO) < 0) {
         printf("SDL could not initialize! SDL_Error: %s\n", SDL_GetError());
         return 1;
@@ -51,6 +54,20 @@ int main(int argc, char* argv[]) {
         SDL_DestroyWindow(window);
         SDL_Quit();
         return 1;
+    }
+
+    SDL_Color color = { 255, 255, 0, SDL_ALPHA_OPAQUE };
+    TTF_Font* Sans = TTF_OpenFont("Sans.ttf", 24);
+    SDL_Surface* text = TTF_RenderText_Solid(Sans, "Hello world", 0, color);
+
+    SDL_CreateTextureFromSurface(renderer, text);
+    if (text) {
+        texture = SDL_CreateTextureFromSurface(renderer, text);
+        SDL_DestroySurface(text);
+    }
+    if (!texture) {
+        SDL_Log("Couldn't create text: %s\n", SDL_GetError());
+        return SDL_APP_FAILURE;
     }
 
     // Main loop flag
@@ -89,3 +106,4 @@ int main(int argc, char* argv[]) {
 
     return 0;
 }
+
