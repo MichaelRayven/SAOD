@@ -1,10 +1,14 @@
 #include <SDL3/SDL.h>
+#include <SDL3/SDL_main.h>
 #include <SDL3_ttf/SDL_ttf.h>
 #include <stdio.h>
 
+static SDL_Window *window = NULL;
+static SDL_Renderer *renderer = NULL;
 static SDL_Texture *texture = NULL;
+static TTF_Font *font = NULL;
 
-void DrawGraph(SDL_Renderer* renderer) {
+void DrawGraph() {
     int data[] = {20, 20, 30, 40, 50, 60, 70, 80, 90, 100};
     int dataSize = sizeof(data) / sizeof(data[0]);
 
@@ -18,7 +22,8 @@ void DrawGraph(SDL_Renderer* renderer) {
     SDL_RenderLine(renderer, margin, margin, margin, 600 - margin); // Y-axis
     SDL_RenderLine(renderer, margin, 600 - margin, 800 - margin, 600 - margin); // X-axis
 
-    
+    SDL_FRect dst;
+    SDL_GetTextureSize(texture, &dst.w, &dst.h);
 
     // Draw bars
     for (int i = 0; i < dataSize; i++) {
@@ -31,7 +36,7 @@ void DrawGraph(SDL_Renderer* renderer) {
         };
         SDL_SetRenderDrawColor(renderer, 0, 0, 255, 255);
         SDL_RenderFillRect(renderer, &barRect);
-        SDL_RenderTexture(renderer, texture, NULL, &barRect);
+        SDL_RenderTexture(renderer, texture, NULL, &dst);
     }
 }
 
@@ -41,14 +46,14 @@ int main(int argc, char* argv[]) {
         return 1;
     }
 
-    SDL_Window* window = SDL_CreateWindow("Graph Example", 800, 600, 0);
+    window = SDL_CreateWindow("Graph Example", 800, 600, 0);
     if (!window) {
         printf("Window could not be created! SDL_Error: %s\n", SDL_GetError());
         SDL_Quit();
         return 1;
     }
 
-    SDL_Renderer* renderer = SDL_CreateRenderer(window, NULL);
+    renderer = SDL_CreateRenderer(window, NULL);
     if (!renderer) {
         printf("Renderer could not be created! SDL_Error: %s\n", SDL_GetError());
         SDL_DestroyWindow(window);
@@ -56,11 +61,16 @@ int main(int argc, char* argv[]) {
         return 1;
     }
 
-    SDL_Color color = { 255, 255, 0, SDL_ALPHA_OPAQUE };
-    TTF_Font* Sans = TTF_OpenFont("Sans.ttf", 24);
-    SDL_Surface* text = TTF_RenderText_Solid(Sans, "Hello world", 0, color);
+    // Font stuff
+    if (!TTF_Init()) {
+        SDL_Log("Couldn't initialise SDL_ttf: %s\n", SDL_GetError());
+        return SDL_APP_FAILURE;
+    }
 
-    SDL_CreateTextureFromSurface(renderer, text);
+    font = TTF_OpenFont("fonts/OpenSans-Regular.ttf", 24);
+    SDL_Color color = { 0, 0, 0, SDL_ALPHA_OPAQUE };
+    SDL_Surface* text = TTF_RenderText_Blended(font, "Hello world!", 0, color);
+
     if (text) {
         texture = SDL_CreateTextureFromSurface(renderer, text);
         SDL_DestroySurface(text);

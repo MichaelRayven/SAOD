@@ -12,6 +12,9 @@ add_subdirectory(vendored/SDL EXCLUDE_FROM_ALL)
 # This assumes the SDL_ttf source is available in vendored/SDL_ttf
 add_subdirectory(vendored/SDL_ttf EXCLUDE_FROM_ALL)
 
+# This copies fonts directory into the build
+file(COPY fonts DESTINATION ${CMAKE_BINARY_DIR})
+
 # Create your game executable target as usual
 add_executable(hello WIN32 lab2_g.c)
 
