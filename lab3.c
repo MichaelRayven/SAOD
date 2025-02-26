@@ -1,6 +1,9 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
+#include <limits.h>
+#include <SDL3/SDL.h>
+#include <graph.h>
 
 int readInt(int *number) {
     char line[64];
@@ -177,6 +180,91 @@ void RunTests(int (*sortFunction)(int n, int arr[])) {
     printf("Run number: %d, Checksum: %d\n\n", RunNumber(n, arr), CheckSum(n, arr));
 }
 
+// fcnt - the number of functions to graph
+void MakeGraph(int fcnt, int (**sortFunctions)(int n, int arr[]), int iterations, int step) {
+    int **timeArrays = (int **) malloc(sizeof(int *) * fcnt);
+    int *numberArray = (int *) malloc(sizeof(int) * iterations);
+    
+    if (timeArrays == NULL || numberArray == NULL) {
+        perror("Memory allocation failed!");
+        return;
+    }
+    
+    // Get test data by running all the sort functions and measuring time
+    int max = INT_MIN, min = INT_MAX;
+    for (int i = 0; i < fcnt; i++) {
+        timeArrays[i] = (int *) malloc(sizeof(int) * iterations);
+        
+        if (timeArrays[i] == NULL) {
+            perror("Memory allocation failed!");
+            return;
+        }
+        
+        int n = step;
+        // Fill time array for i-th sort function
+        for (int j = 0; j < iterations; j++) {
+            int *arr = (int *) malloc(sizeof(int) * n);
+            FillRand(n, arr);
+            
+            timeArrays[i][j] = (sortFunctions[i])(n, arr);
+            numberArray[j] = n;
+            
+            if (timeArrays[i][j] > max) {
+                max = timeArrays[i][j];
+            }
+            if (timeArrays[i][j] < min) {
+                min = timeArrays[i][j];
+            }
+            
+            free(arr);
+            n += step;
+        }
+    }
+    
+    // Generate graph y-labels
+    int lstep = (int) (SDL_pow(10, SDL_round(SDL_log10(max))) / 10);
+    int lcnt = 1;
+    while (lcnt * lstep < max) {
+        lcnt++;
+    }
+
+    int *labelsArray = (int *) malloc(sizeof(int) * lcnt);
+    for (int i = 0; i < lcnt; i++) {
+        labelsArray[i] = lstep * i;
+    }
+
+
+    GraphInit();
+    bool quit = { false };
+
+    //The event data
+    SDL_Event e;
+    while( quit == false ){
+                //Get event data
+                while( SDL_PollEvent( &e ) )
+                {
+                    //If event is quit type
+                    if( e.type == SDL_EVENT_QUIT )
+                    {
+                        //End the main loop
+                        GraphQuit();
+                        quit = true;
+                    }
+                }
+
+                /* Draw the text */
+                GraphIterate(fcnt, iterations, lcnt, timeArrays, numberArray, labelsArray);
+    }
+
+    // Free memory
+    for (int i = 0; i < fcnt; i++) {
+        free(timeArrays[i]);
+    }
+    free(timeArrays);
+    free(numberArray);
+    free(labelsArray);
+}
+
 int shakerSort(int n, int arr[]) {
     int C = 0, M = 0; // Сравнения и перемещения
     int L = 0, R = n - 1, k = n - 1;
@@ -242,6 +330,8 @@ int main() {
     printf("\nShaker and Bubble sort comparison:\n\n");
     PrintComparisonTable(shakerSort, bubbleSort);
 
+    int (*functions[2])(int, int[]) = {shakerSort, bubbleSort};
+    MakeGraph(2, functions, 10, 100);
 
     return 0;
 }

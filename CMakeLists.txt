@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.16)
-project(hello)
+project(saod)
 
 # set the output directory for built objects.
 # This makes sure that the dynamic library goes into the build directory automatically.
@@ -12,11 +12,14 @@ add_subdirectory(vendored/SDL EXCLUDE_FROM_ALL)
 # This assumes the SDL_ttf source is available in vendored/SDL_ttf
 add_subdirectory(vendored/SDL_ttf EXCLUDE_FROM_ALL)
 
+add_subdirectory(graph EXCLUDE_FROM_ALL)
+
 # This copies fonts directory into the build
 file(COPY fonts DESTINATION ${CMAKE_BINARY_DIR})
 
 # Create your game executable target as usual
-add_executable(hello WIN32 lab2_g.c)
+add_executable(saod WIN32 lab3.c)
 
 # Link to the actual SDL3 library.
-target_link_libraries(hello PRIVATE SDL3_ttf::SDL3_ttf SDL3::SDL3)
+target_link_libraries(saod PRIVATE graph SDL3_ttf::SDL3_ttf SDL3::SDL3)
+target_include_directories(saod PRIVATE graph)
