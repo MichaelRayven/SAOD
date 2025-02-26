@@ -181,7 +181,7 @@ void RunTests(int (*sortFunction)(int n, int arr[])) {
 }
 
 // fcnt - the number of functions to graph
-void MakeGraph(int fcnt, int (**sortFunctions)(int n, int arr[]), int iterations, int step) {
+void MakeGraph(int fcnt, int (**sortFunctions)(int n, int arr[]), char **functionNames, int iterations, int step) {
     int **timeArrays = (int **) malloc(sizeof(int *) * fcnt);
     int *numberArray = (int *) malloc(sizeof(int) * iterations);
     
@@ -253,7 +253,7 @@ void MakeGraph(int fcnt, int (**sortFunctions)(int n, int arr[]), int iterations
                 }
 
                 /* Draw the text */
-                GraphIterate(fcnt, iterations, lcnt, timeArrays, numberArray, labelsArray);
+                GraphIterate(fcnt, iterations, lcnt, timeArrays, functionNames, numberArray, labelsArray);
     }
 
     // Free memory
@@ -321,6 +321,26 @@ int bubbleSort(int n, int arr[]) {
     return (M + C);
 }
 
+int selectSort(int n, int arr[]) {
+    int C = 0, M = 0; // Сравнения и перемещения
+
+    for (int i = 0; i < n - 1; i++) {
+        int minInd = i;
+        for (int j = i + 1; j < n; j++) {
+            if (arr[j] < arr[minInd]) {
+                minInd = j;
+                C++;
+            }
+        }
+        
+        int temp = arr[i];
+        arr[i] = arr[minInd];
+        arr[minInd] = temp;
+        M += 3;
+    }
+
+    return (M + C);
+}
 
 int main() {  
     srand(time(NULL));
@@ -330,8 +350,9 @@ int main() {
     printf("\nShaker and Bubble sort comparison:\n\n");
     PrintComparisonTable(shakerSort, bubbleSort);
 
-    int (*functions[2])(int, int[]) = {shakerSort, bubbleSort};
-    MakeGraph(2, functions, 10, 100);
+    int (*functions[3])(int, int[]) = {selectSort, shakerSort, bubbleSort};
+    char* functionNames[3] = {"SelectSort", "ShakerSort", "BubbleSort"};
+    MakeGraph(3, functions, functionNames, 10, 100);
 
     return 0;
 }

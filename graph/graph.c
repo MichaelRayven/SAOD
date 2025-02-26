@@ -36,7 +36,7 @@ void DrawGraphLabels() {
     SDL_RenderTextureRotated(renderer, leftLabelTexture, NULL, &dst, -90, NULL, SDL_FLIP_NONE);
 }
 
-void DrawGraph(int n, int data[], int min, int max) {
+void DrawGraph(int n, int data[], char label[], int min, int max) {
     int graphWidth = WINDOW_WIDTH - 2 * MARGIN;
     int graphHeight = WINDOW_HEIGHT - 2 * MARGIN;
     int barWidth = graphWidth / (n - 1);
@@ -59,6 +59,29 @@ void DrawGraph(int n, int data[], int min, int max) {
 
         SDL_SetRenderDrawColor(renderer, r, g, b, 255);
         SDL_RenderLine(renderer, startX, startY, endX, endY);
+
+        if (i == (n - 1)) {
+            TTF_Font *font = TTF_OpenFont("fonts/OpenSans-Regular.ttf", 12);
+            SDL_Color color = { r, g, b, SDL_ALPHA_OPAQUE };
+            SDL_Surface* labelSurface = TTF_RenderText_Blended(font, label, 0, color);
+            SDL_Texture* labelTexture = NULL;
+
+            if (labelSurface) {
+                labelTexture = SDL_CreateTextureFromSurface(renderer, labelSurface);
+                SDL_DestroySurface(labelSurface);
+            }
+
+            if (labelTexture) {
+                SDL_FRect dst = {endX, endY, 0.f, 0.f};
+                SDL_GetTextureSize(labelTexture, &dst.w, &dst.h);
+                SDL_RenderTexture(renderer, labelTexture, NULL, &dst);
+                SDL_DestroyTexture(labelTexture);
+            }
+
+            if (font) {
+                TTF_CloseFont(font);
+            }
+        } 
     }
 }
 
@@ -203,13 +226,13 @@ void GraphQuit()
 @param n length of data[i] and xLabels
 @param k length of yLabels
 */
-void GraphIterate(int m, int n, int k, int **data, int xLabels[], int yLabels[])
+void GraphIterate(int m, int n, int k, int **data, char **dataLabels, int xLabels[], int yLabels[])
 {
     SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
     SDL_RenderClear(renderer);
         
     for (int i = 0; i < m; i++) {
-        DrawGraph(n, data[i], yLabels[0], yLabels[k - 1]);
+        DrawGraph(n, data[i], dataLabels[i], yLabels[0], yLabels[k - 1]);
     }
     DrawXLabels(n, xLabels);
     DrawYLabels(k, yLabels);
