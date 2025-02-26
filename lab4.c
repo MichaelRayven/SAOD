@@ -87,7 +87,7 @@ void PrintTimeTable(int (*sortFunction)(int n, int arr[])) {
         }
 
         int C = n * (n - 1) / 2;
-        int M = 3*C;
+        int M = C + n*2 - 2;
         int Ttheor = M + C;
 
         FillDec(n, A);
