@@ -97,7 +97,7 @@ void DrawXLabels(int n, int xLabels[]) {
         float x = MARGIN + (barWidth * i);
         
         // Convert number to string
-        char str[8];
+        char str[16];
         sprintf(str, "%d", xLabels[i]);
         
         // Create and render the label
@@ -136,7 +136,7 @@ void DrawYLabels(int n, int yLabels[]) {
 
     for (int i = 0; i < n; i++) {        
         // Convert number to string
-        char str[8];
+        char str[16];
         sprintf(str, "%d", yLabels[i]);
         
         // Create and render the label
