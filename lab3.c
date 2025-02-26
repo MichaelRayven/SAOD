@@ -353,6 +353,10 @@ int main() {
     int (*functions[3])(int, int[]) = {selectSort, shakerSort, bubbleSort};
     char* functionNames[3] = {"SelectSort", "ShakerSort", "BubbleSort"};
     MakeGraph(3, functions, functionNames, 10, 100);
+    
+    // int (*functions[1])(int, int[]) = {selectSort};
+    // char* functionNames[1] = {"SelectSort"};
+    // MakeGraph(1, functions, functionNames, 10, 100);
 
     return 0;
 }
