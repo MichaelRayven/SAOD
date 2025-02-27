@@ -65,9 +65,9 @@ int selectSort(int n, int arr[]) {
     for (int i = 0; i < n - 1; i++) {
         int minInd = i;
         for (int j = i + 1; j < n; j++) {
+            C++;
             if (arr[j] < arr[minInd]) {
                 minInd = j;
-                C++;
             }
         }
         
