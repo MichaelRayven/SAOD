@@ -458,52 +458,149 @@ int shellSort(int n, int arr[]) {
     return M + C;
 }
 
+int* myGenerateSteps(int n, int *m) {
+    int h = 1, i = 0;
+    int size = n/2;
+    int *arr = malloc(sizeof(int) * size);
+    double gamma = 2.243609061420001;
+    
+    
+    while (h < n) {
+        if (i >= size) {
+            size += 10;
+            arr = realloc(arr, sizeof(int) * size);
+        }
+
+        arr[i++] = h;
+        h = (int) ((pow(gamma, (i + 1)) - 1)/(gamma - 1)) + 1;
+    }
+    
+    *m = i;
+
+    return arr;
+}
+
+int myShellSort(int n, int arr[]) {
+    int C = 0, M = 0; // Сравнения и перемещения
+    int m = 0; // Количество k-сортировок
+    int *H = myGenerateSteps(n, &m);
+
+    while (m > 0) {
+        int k = H[--m]; // Шаг
+        
+        for (int i = k; i < n; i++) {
+            int temp = arr[i];
+            int j = i - k;
+            M++;
+            
+            C++;
+            for (; j >= 0 && temp < arr[j]; j -= k) {
+                arr[j + k] = arr[j];
+                C++;
+                M++;
+            }
+            
+            arr[j + k] = temp;
+            M++;
+        }
+    }
+
+    // printf("\n* Comparisons: %d, moves: %d *\n", C, M);
+    free(H);
+    return M + C;
+}
+
 int main() {  
     srand(time(NULL));
     
-    // int (*functions[])(int, int[]) = {selectSort, shakerSort, bubbleSort, insertSort};
-    // char* functionNames[] = {"SelectSort", "ShakerSort", "BubbleSort", "InsertSort"};
-    // int n = sizeof(functionNames) / sizeof(functionNames[0]);
+    int (*functions[])(int, int[]) = {selectSort, shakerSort, bubbleSort, insertSort, shellSort};
+    char* functionNames[] = {"SelectSort", "ShakerSort", "BubbleSort", "InsertSort", "ShellSort"};
+    int n = sizeof(functionNames) / sizeof(functionNames[0]);
 
     // RunTests(insertSort);
     // printf("\nComparison between sort methods:\n");
     // PrintComparisonTable(n, functions, functionNames);
     
-    // MakeGraph(n, functions, functionNames, 10, 100);
     
     RunTests(shellSort);
     printf("Shell sort:\n");
     
+    // Shell / Insert Comparison table
     printf("|  N  |       h_1 … h_m - D. Knuth's formula     |  ShellSort Mfact + Cfact  |  InsertSort Mfact + Cfact  |\n");
     printf("|     |                                          |                           |                            |\n");
-
+    
     for (int n = 100; n <= 500; n += 100) {
         int *A = (int *) malloc(sizeof(int) * n);
         int *B = (int *) malloc(sizeof(int) * n);
-
+        
         if (A == NULL || B == NULL) {
             perror("Memory allocation failed!");
             return 1;
         }
-
+        
         FillRand(n, A);
         CopyMas(n, A, B);
         int Tshell = shellSort(n, A);
         int Tinsert = insertSort(n, B);
-
+        
         char line[256] = "";
         int *steps = generateSteps(n);
         int m = (int) log2(n) - 1;
         sPrintMas(line, m, steps);
         free(steps);
         steps = NULL;
-
+        
         line[strcspn(line, "\n") - 1] = 0;
-
+        
         printf("| %3d | %40s | %25d | %26d |\n", n, line, Tshell, Tinsert);
-
+        
         free(A);
     }
+
+    // Shell / Shell with different step formula comparison table
+    printf("\n|  N  |       h_1 … h_m - D. Knuth's formula     |  ShellSort Mfact + Cfact  |  h_1 … h_m - Different formula  |  ShellSort Mfact + Cfact  |\n");
+    printf("|     |                                          |                           |                                 |                           |\n");
+    
+    for (int n = 100; n <= 500; n += 100) {
+        int *A = (int *) malloc(sizeof(int) * n);
+        int *B = (int *) malloc(sizeof(int) * n);
+        
+        if (A == NULL || B == NULL) {
+            perror("Memory allocation failed!");
+            return 1;
+        }
+        
+        FillRand(n, A);
+        CopyMas(n, A, B);
+        int Tshell = shellSort(n, A);
+        int Tshell2 = myShellSort(n, B);
+        
+        char line[256] = "";
+        int *steps = generateSteps(n);
+        int m = (int) log2(n) - 1;
+        sPrintMas(line, m, steps);
+        line[strcspn(line, "\n") - 1] = 0;
+
+        // Clear
+        free(steps);
+        steps = NULL;
+        
+        char line2[256] = "";
+        m = 0;
+        steps = myGenerateSteps(n, &m);
+        sPrintMas(line2, m, steps);
+        line2[strcspn(line2, "\n") - 1] = 0;
+
+        // Clear
+        free(steps);
+        steps = NULL;
+
+        printf("| %3d | %40s | %25d | %31s | %25d |\n", n, line, Tshell, line2, Tshell2);
+        
+        free(A);
+    }
+    
+    MakeGraph(n, functions, functionNames, 10, 100);
 
     return 0;
 }
