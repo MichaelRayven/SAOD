@@ -18,8 +18,8 @@ add_subdirectory(graph EXCLUDE_FROM_ALL)
 file(COPY fonts DESTINATION ${CMAKE_BINARY_DIR})
 
 # Create your game executable target as usual
-add_executable(saod WIN32 lab4.c)
+add_executable(saod WIN32 lab5.c)
 
 # Link to the actual SDL3 library.
-target_link_libraries(saod PRIVATE graph SDL3_ttf::SDL3_ttf SDL3::SDL3)
+target_link_libraries(saod PRIVATE graph m SDL3_ttf::SDL3_ttf SDL3::SDL3)
 target_include_directories(saod PRIVATE graph)
