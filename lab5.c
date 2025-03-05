@@ -61,6 +61,15 @@ void PrintMas(int n, int A[]) {
     printf("\n");
 }
 
+void sPrintMas(char* buffer, int n, int A[]) {
+    char num[16];
+    for (int i = 0; i < n; i++) {
+        sprintf(num, "%d ", A[i]);
+        strcat(buffer, num);
+    }
+    strcat(buffer, "\n");
+}
+
 /*
 Copies all elements from source array into the target array.
 @param n length of array A and B.
@@ -457,14 +466,44 @@ int main() {
     // int n = sizeof(functionNames) / sizeof(functionNames[0]);
 
     // RunTests(insertSort);
-    // printf("Insert sort:\n");
-    // PrintTimeTable(insertSort);
     // printf("\nComparison between sort methods:\n");
     // PrintComparisonTable(n, functions, functionNames);
     
     // MakeGraph(n, functions, functionNames, 10, 100);
-
+    
     RunTests(shellSort);
+    printf("Shell sort:\n");
+    
+    printf("|  N  |       h_1 … h_m - D. Knuth's formula     |  ShellSort Mfact + Cfact  |  InsertSort Mfact + Cfact  |\n");
+    printf("|     |                                          |                           |                            |\n");
+
+    for (int n = 100; n <= 500; n += 100) {
+        int *A = (int *) malloc(sizeof(int) * n);
+        int *B = (int *) malloc(sizeof(int) * n);
+
+        if (A == NULL || B == NULL) {
+            perror("Memory allocation failed!");
+            return 1;
+        }
+
+        FillRand(n, A);
+        CopyMas(n, A, B);
+        int Tshell = shellSort(n, A);
+        int Tinsert = insertSort(n, B);
+
+        char line[256] = "";
+        int *steps = generateSteps(n);
+        int m = (int) log2(n) - 1;
+        sPrintMas(line, m, steps);
+        free(steps);
+        steps = NULL;
+
+        line[strcspn(line, "\n") - 1] = 0;
+
+        printf("| %3d | %40s | %25d | %26d |\n", n, line, Tshell, Tinsert);
+
+        free(A);
+    }
 
     return 0;
 }
