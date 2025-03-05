@@ -105,11 +105,55 @@ void PrintTimeTable(int (*sortFunction)(int n, int arr[])) {
     }
 }
 
-void PrintComparisonTable(int (*sortFunctionA)(int n, int arr[]), int (*sortFunctionB)(int n, int arr[]), int (*sortFunctionC)(int n, int arr[]), int (*sortFunctionD)(int n, int arr[])) {
+void PrintComparisonTable(int fcnt, int (**sortFunctions)(int n, int arr[]), char **labels) {
     srand(time(NULL));
 
-    printf("|  N  |                                     Mfact + Cfact                                 |\n");
-    printf("|     |     SelectSort     |     BubbleSort     |     ShakerSort     |     InsertSort     |\n");
+    char header[256] = "|  N  |";
+    char subHeader[256] = "|     |";
+    int spaceCnt = 4*2*fcnt + fcnt - strlen("Mfact + Cfact");
+    int i, length;
+
+    for (i = 0; i < fcnt; i++) 
+        spaceCnt += strlen(labels[i]);
+
+    spaceCnt /= 2;
+    
+    length = strlen(header);
+    for (i = length; i < (length + spaceCnt); i++) 
+        header[i] = ' ';
+    
+    strcat(header, "Mfact + Cfact");
+
+    length = strlen(header);
+    for (i = length; i < (length + spaceCnt); i++) 
+        header[i] = ' ';
+
+    header[i] = '|';
+    header[i + 1] = 0;
+
+    printf("%s\n", header);
+
+
+    for (i = 0; i < fcnt; i++) {
+        length = strlen(subHeader);
+        for (int j = length; j < (length + 4); j++) {
+            subHeader[j] = ' ';
+        }
+        subHeader[strlen(subHeader)] = 0;
+        strcat(subHeader, labels[i]);
+
+        length = strlen(subHeader);
+        for (int j = length; j < (length + 4); j++) {
+            subHeader[j] = ' ';
+        }
+
+        length = strlen(subHeader);
+        subHeader[length] = '|';
+        subHeader[length + 1] = 0;
+    }
+
+    printf("%s\n", subHeader);
+
 
     for (int n = 100; n <= 500; n += 100) {
         int *A = (int *) malloc(sizeof(int) * n);
@@ -120,21 +164,18 @@ void PrintComparisonTable(int (*sortFunctionA)(int n, int arr[]), int (*sortFunc
             perror("Memory allocation failed!");
             return;
         }
-        
-        CopyMas(n, A, B);
-        int TrandA = sortFunctionA(n, B);
 
-        CopyMas(n, A, B);
-        int TrandB = sortFunctionB(n, B);
-
-        CopyMas(n, A, B);
-        int TrandC = sortFunctionC(n, B);
-
-        CopyMas(n, A, B);
-        int TrandD = sortFunctionD(n, B);
-
-        printf("| %3d | %18d | %18d | %18d | %18d |\n", 
-            n, TrandA, TrandB, TrandC, TrandD);
+        printf("| %3d |", n);
+        for (i = 0; i < fcnt; i++) {
+            CopyMas(n, A, B);
+            int Trand = sortFunctions[i](n, B);
+            char line[64] = "    %", number[16];
+            sprintf(number, "%ld", strlen(labels[i]));
+            strcat(line, number);
+            strcat(line, "d    |");
+            printf(line, Trand);
+        }
+        printf("\n");
 
         // Clear memory
         free(A);
@@ -348,10 +389,11 @@ int insertSort(int n, int arr[]) {
         int j = i - 1;
         M++;
         
-        for (;j >= 0 && temp < arr[j]; C++) {
+        C++;
+        for (; j >= 0 && temp < arr[j]; j--) {
             arr[j + 1] = arr[j];
+            C++;
             M++;
-            j--;
         }
         
         arr[j + 1] = temp;
@@ -365,15 +407,16 @@ int insertSort(int n, int arr[]) {
 int main() {  
     srand(time(NULL));
     
-    RunTests(insertSort);
-    printf("Shaker sort:\n");
-    PrintTimeTable(insertSort);
-    printf("\nComparison between sort methods:\n");
-    PrintComparisonTable(selectSort, bubbleSort, shakerSort, insertSort);
-    
     int (*functions[])(int, int[]) = {selectSort, shakerSort, bubbleSort, insertSort};
     char* functionNames[] = {"SelectSort", "ShakerSort", "BubbleSort", "InsertSort"};
     int n = sizeof(functionNames) / sizeof(functionNames[0]);
+
+    RunTests(insertSort);
+    printf("Insert sort:\n");
+    PrintTimeTable(insertSort);
+    printf("\nComparison between sort methods:\n");
+    PrintComparisonTable(n, functions, functionNames);
+    
     MakeGraph(n, functions, functionNames, 10, 100);
 
     return 0;
