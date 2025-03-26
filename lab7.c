@@ -246,7 +246,7 @@ void main() {
 
     printf("Оригинальная книга: \n\n");
     PrintPhoneBook(MAX_RECORDS, phoneBook);
-    selectSort(MAX_RECORDS, phoneBook, compareByLastAndFirstNameDescending);
+    selectSort(MAX_RECORDS, phoneBook, compareByLastAndFirstName);
     printf("\nОтсортированная книга: \n\n");
     PrintPhoneBook(MAX_RECORDS, phoneBook);
     int ind = 0;
