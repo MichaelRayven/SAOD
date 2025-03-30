@@ -28,55 +28,8 @@ int readInt(int *number) {
 
 void FillInc(int n, int A[]) {
     for (int i = 0; i < n; i++) {
-        A[i] = i + 1;
+        A[i] = i;
     }
-}
-
-void FillDec(int n, int A[]) {
-    for (int i = 0; i < n; i++) {
-        A[i] = n - i;
-    }
-}
-
-void FillRand(int n, int A[]) {
-    for (int i = 0; i < n; i++) {
-        A[i] = rand() % 100;
-    }
-}
-
-int CheckSum(int n, int A[]) {
-    int sum = 0;
-    for (int i = 0; i < n; i++) {
-        sum += A[i];
-    }
-    return sum;
-}
-
-int RunNumber(int n, int A[]) {
-    if (n == 0) return 0;
-    int series = 1;
-    for (int i = 1; i < n; i++) {
-        if (A[i] < A[i - 1]) {
-            series++;
-        }
-    }
-    return series;
-}
-
-void PrintMas(int n, int A[]) {
-    for (int i = 0; i < n; i++) {
-        printf("%d ", A[i]);
-    }
-    printf("\n");
-}
-
-void sPrintMas(char* buffer, int n, int A[]) {
-    char num[16];
-    for (int i = 0; i < n; i++) {
-        sprintf(num, "%d ", A[i]);
-        strcat(buffer, num);
-    }
-    strcat(buffer, "\n");
 }
 
 /*
@@ -91,44 +44,48 @@ void CopyMas(int n, int A[], int B[]) {
     }
 }
 
-void PrintPhoneBook(int n, PhoneBook *phoneBook) {
+void PrintPhoneBook(int n, PhoneBook phoneBook[], int indexArr[]) {
     printf("---------------------------------------------------------------------------------------------------------\n");
     printf("|        Имя        |        Фамилия        |        Номер        |                Адрес                |\n");
     printf("---------------------------------------------------------------------------------------------------------\n");
     
     for (int i = 0; i < n; i++) {
         printf("| %-17s | %-21s | %-19s | %-35s |\n", 
-            phoneBook[i].firstname, 
-            phoneBook[i].lastname, 
-            phoneBook[i].phone, 
-            phoneBook[i].address
+            phoneBook[indexArr[i]].firstname, 
+            phoneBook[indexArr[i]].lastname, 
+            phoneBook[indexArr[i]].phone, 
+            phoneBook[indexArr[i]].address
         );
     }
 
     printf("---------------------------------------------------------------------------------------------------------\n");
 }
 
-int selectSort(int n, PhoneBook arr[], int (*predicate)(PhoneBook *a, PhoneBook *b)) {
+int selectSort(int n, PhoneBook arr[], int ind[], int (*predicate)(PhoneBook *a, PhoneBook *b)) {
     int C = 0, M = 0; // Сравнения и перемещения
 
     for (int i = 0; i < n - 1; i++) {
         int minInd = i;
         for (int j = i + 1; j < n; j++) {
             C++;
-            if (predicate(&arr[j], &arr[minInd]) < 0) {
+            if (predicate(&arr[ind[j]], &arr[ind[minInd]]) < 0) {
                 minInd = j;
             }
         }
         
-        PhoneBook temp = arr[i];
-        arr[i] = arr[minInd];
-        arr[minInd] = temp;
+        int temp = ind[i];
+        ind[i] = ind[minInd];
+        ind[minInd] = temp;
         M += 3;
     }
 
     return (M + C);
 }
 
+/*
+Compares two PhoneBooks by last and first name
+@return 0 if a and b are equal, >0 if a is greater than b, <0 if a is less than b
+*/
 int compareByLastAndFirstName(PhoneBook *a, PhoneBook *b) {
     int lastnameComparison = strcmp(a->lastname, b->lastname);
 
@@ -173,31 +130,26 @@ int compareByFirstAndLastNameDescending(PhoneBook *a, PhoneBook *b) {
     }
 }
 
-int binarySearchImproved(int n, PhoneBook arr[], char lastname[32], int *ind) {
+int binarySearchImproved(int n, PhoneBook arr[], int indexArr[], PhoneBook *x, int (*predicate)(PhoneBook *a, PhoneBook *b)) {
     int L = 0, R = n - 1;
-    int C = 0, M;
-    
+    int M;
 
     while (L < R) {
         M = (L + R) / 2;
         
-        C++;
-        if (strcmp(arr[M].lastname, lastname) < 0) {
+        if (predicate(&arr[indexArr[M]], x) < 0) {
             L = M + 1;
         } else {
             R = M;
         }
     }
     
-    C++;
     M = (L + R) / 2;
-    if (strcmp(arr[M].lastname, lastname) == 0) {
-        (*ind) = M;
+    if (predicate(&arr[indexArr[M]], x) == 0) {
+        return M;
     } else {
-        (*ind) = -1;
+        return -1;
     }
-
-    return C;
 }
 
 void main() {
@@ -210,14 +162,28 @@ void main() {
         {"Alice", "Murphy", "1-397-364-2439", "2662 Nicholaus Unions Apt. 615"},
     };
 
+    int a[MAX_RECORDS], b[MAX_RECORDS];
+    FillInc(MAX_RECORDS, a);
+    FillInc(MAX_RECORDS, b);
+
     printf("Оригинальная книга: \n\n");
-    PrintPhoneBook(MAX_RECORDS, phoneBook);
-    selectSort(MAX_RECORDS, phoneBook, compareByLastAndFirstName);
-    printf("\nОтсортированная книга: \n\n");
-    PrintPhoneBook(MAX_RECORDS, phoneBook);
-    int ind = 0;
-    char lastname[32] = "Wallace";
-    binarySearchImproved(MAX_RECORDS, phoneBook, lastname, &ind);
-    printf("\nПоиск по фамилии %s\n", lastname);
-    printf("Найдена запись с фамилией %s по индексу %d\n", phoneBook[ind].lastname, ind);
+    PrintPhoneBook(MAX_RECORDS, phoneBook, a);
+
+    selectSort(MAX_RECORDS, phoneBook, a, compareByLastAndFirstName);
+    selectSort(MAX_RECORDS, phoneBook, b, compareByFirstAndLastName);
+    printf("\nОтсортированная по фамилии и имени книга: \n\n");
+    PrintPhoneBook(MAX_RECORDS, phoneBook, a);
+    printf("\nОтсортированная по имени и фамилии книга: \n\n");
+    PrintPhoneBook(MAX_RECORDS, phoneBook, b);
+    
+    PhoneBook *x = &phoneBook[0];
+    int index;
+
+    printf("\nБинарный поиск по фамилии %s\n", x->lastname);
+    index = binarySearchImproved(MAX_RECORDS, phoneBook, a, x, compareByLastAndFirstName);
+    printf("Найден %s по индексу ind[%d] = %d\n\n", phoneBook[a[index]].lastname, index, a[index]);
+    
+    printf("\nБинарный поиск по имени %s\n", x->firstname);
+    index = binarySearchImproved(MAX_RECORDS, phoneBook, b, x, compareByFirstAndLastName);
+    printf("Найден %s по индексу ind[%d] = %d\n", phoneBook[b[index]].firstname, index, b[index]);
 }
