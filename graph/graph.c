@@ -54,15 +54,15 @@ void DrawGraph(int n, int data[], char label[], int min, int max) {
         float endX = MARGIN + (barWidth * i);
         
         int r =  data[0] % 256;
-        int g =  (r + 85) % 256;
-        int b =  (g + 85) % 256;
+        int g =  (r * 3) % 256;
+        int b =  (g * 3) % 256;
 
         SDL_SetRenderDrawColor(renderer, r, g, b, 255);
         SDL_RenderLine(renderer, startX, startY, endX, endY);
 
         if (i == (n - 1)) {
             TTF_Font *font = TTF_OpenFont("fonts/OpenSans-Regular.ttf", 12);
-            SDL_Color color = { r, g, b, SDL_ALPHA_OPAQUE };
+            SDL_Color color = { 0, 0, 0, SDL_ALPHA_OPAQUE };
             SDL_Surface* labelSurface = TTF_RenderText_Blended(font, label, 0, color);
             SDL_Texture* labelTexture = NULL;
 
@@ -187,8 +187,8 @@ int GraphInit() {
 
     // Create the text
     SDL_Color color = { 0, 0, 0, SDL_ALPHA_OPAQUE };
-    SDL_Surface* leftLabel = TTF_RenderText_Blended(font, "Трудоемкость, T", 0, color);
-    SDL_Surface* bottomLabel = TTF_RenderText_Blended(font, "Кол-во данных, N", 0, color);
+    SDL_Surface* leftLabel = TTF_RenderText_Blended(font, "Трудоемкость, T * 10^3", 0, color);
+    SDL_Surface* bottomLabel = TTF_RenderText_Blended(font, "Кол-во данных, N * 10^3", 0, color);
 
     if (font) {
         TTF_CloseFont(font);

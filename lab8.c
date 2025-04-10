@@ -68,7 +68,7 @@ int selectSort(int n, PhoneBook arr[], int ind[], int (*predicate)(PhoneBook *a,
         int minInd = i;
         for (int j = i + 1; j < n; j++) {
             C++;
-            if (predicate(&arr[ind[j]], &arr[ind[minInd]]) < 0) {
+            if (predicate(&arr[ind[j]], &arr[ind[minInd]])) {
                 minInd = j;
             }
         }
@@ -78,55 +78,60 @@ int selectSort(int n, PhoneBook arr[], int ind[], int (*predicate)(PhoneBook *a,
         ind[minInd] = temp;
         M += 3;
     }
+    printf("\n");
 
     return (M + C);
 }
 
-/*
-Compares two PhoneBooks by last and first name
-@return 0 if a and b are equal, >0 if a is greater than b, <0 if a is less than b
-*/
-int compareByLastAndFirstName(PhoneBook *a, PhoneBook *b) {
+int lessByLastAndFirstName(PhoneBook *a, PhoneBook *b) {
     int lastnameComparison = strcmp(a->lastname, b->lastname);
 
-    if (lastnameComparison != 0) {
-        return lastnameComparison;
+    if (lastnameComparison < 0) {
+        return 1;
+    } else if (lastnameComparison > 0) {
+        return 0;
     } else {
         int firstnameComparison = strcmp(a->firstname, b->firstname);
-        return firstnameComparison;
+        return firstnameComparison < 0;
     }
 }
 
-int compareByLastAndFirstNameDescending(PhoneBook *a, PhoneBook *b) {
-    int lastnameComparison = strcmp(b->lastname, a->lastname);
+int greaterByLastAndFirstName(PhoneBook *a, PhoneBook *b) {
+    int lastnameComparison = strcmp(a->lastname, b->lastname);
 
-    if (lastnameComparison != 0) {
-        return lastnameComparison;
+    if (lastnameComparison > 0) {
+        return 1;
+    } else if (lastnameComparison < 0) {
+        return 0;
     } else {
-        int firstnameComparison = strcmp(b->firstname, a->firstname);
-        return firstnameComparison;
+        int firstnameComparison = strcmp(a->firstname, b->firstname);
+        return firstnameComparison > 0;
     }
 }
 
-int compareByFirstAndLastName(PhoneBook *a, PhoneBook *b) {
+int lessByFirstAndLastName(PhoneBook *a, PhoneBook *b) {
     int firstnameComparison = strcmp(a->firstname, b->firstname);
     
-    if (firstnameComparison != 0) {
-        return firstnameComparison;
+    if (firstnameComparison < 0) {
+        return 1;
+    } else if (firstnameComparison > 0) {
+        return 0;
     } else {
         int lastnameComparison = strcmp(a->lastname, b->lastname);
-        return lastnameComparison;
+        return lastnameComparison < 0;
     }
 }
 
-int compareByFirstAndLastNameDescending(PhoneBook *a, PhoneBook *b) {
-    int firstnameComparison = strcmp(b->firstname, a->firstname);
+int greaterByFirstAndLastName(PhoneBook *a, PhoneBook *b) {
+    int firstnameComparison = strcmp(a->firstname, b->firstname);
     
-    if (firstnameComparison != 0) {
-        return firstnameComparison;
+    if (firstnameComparison > 0) {
+        return 1;
+    } else if (firstnameComparison < 0) {
+        return 0;
     } else {
-        int lastnameComparison = strcmp(b->lastname, a->lastname);
-        return lastnameComparison;
+        int lastnameComparison = strcmp(a->lastname, b->lastname);
+        return lastnameComparison > 0;
     }
 }
 
@@ -137,7 +142,7 @@ int binarySearchImproved(int n, PhoneBook arr[], int indexArr[], PhoneBook *x, i
     while (L < R) {
         M = (L + R) / 2;
         
-        if (predicate(&arr[indexArr[M]], x) < 0) {
+        if (predicate(&arr[indexArr[M]], x)) {
             L = M + 1;
         } else {
             R = M;
@@ -169,8 +174,8 @@ void main() {
     printf("Оригинальная книга: \n\n");
     PrintPhoneBook(MAX_RECORDS, phoneBook, a);
 
-    selectSort(MAX_RECORDS, phoneBook, a, compareByLastAndFirstName);
-    selectSort(MAX_RECORDS, phoneBook, b, compareByFirstAndLastName);
+    selectSort(MAX_RECORDS, phoneBook, a, lessByLastAndFirstName);
+    selectSort(MAX_RECORDS, phoneBook, b, lessByFirstAndLastName);
     printf("\nОтсортированная по фамилии и имени книга: \n\n");
     PrintPhoneBook(MAX_RECORDS, phoneBook, a);
     printf("\nОтсортированная по имени и фамилии книга: \n\n");
@@ -180,10 +185,10 @@ void main() {
     int index;
 
     printf("\nБинарный поиск по фамилии %s\n", x->lastname);
-    index = binarySearchImproved(MAX_RECORDS, phoneBook, a, x, compareByLastAndFirstName);
+    index = binarySearchImproved(MAX_RECORDS, phoneBook, a, x, lessByLastAndFirstName);
     printf("Найден %s по индексу ind[%d] = %d\n\n", phoneBook[a[index]].lastname, index, a[index]);
     
     printf("\nБинарный поиск по имени %s\n", x->firstname);
-    index = binarySearchImproved(MAX_RECORDS, phoneBook, b, x, compareByFirstAndLastName);
+    index = binarySearchImproved(MAX_RECORDS, phoneBook, b, x, lessByFirstAndLastName);
     printf("Найден %s по индексу ind[%d] = %d\n", phoneBook[b[index]].firstname, index, b[index]);
 }

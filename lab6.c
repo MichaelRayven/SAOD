@@ -229,7 +229,7 @@ void RunTests(int (*sortFunction)(int n, int arr[])) {
     printf("Run number: %d, Checksum: %d\n\n", RunNumber(n, arr), CheckSum(n, arr));
 }
 
-// fcnt - the number of functions to graph
+// @param fcnt the number of functions to graph
 void MakeSearchGraph(int fcnt, int (**sortFunctions)(int n, int arr[], int x, int* ind), char **functionNames, int iterations) {
     int **timeArrays = (int **) malloc(sizeof(int *) * fcnt);
     int *numberArray = (int *) malloc(sizeof(int) * iterations);

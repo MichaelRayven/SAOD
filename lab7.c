@@ -115,7 +115,7 @@ int selectSort(int n, PhoneBook arr[], int (*predicate)(PhoneBook *a, PhoneBook 
         int minInd = i;
         for (int j = i + 1; j < n; j++) {
             C++;
-            if (predicate(&arr[j], &arr[minInd]) < 0) {
+            if (predicate(&arr[j], &arr[minInd])) {
                 minInd = j;
             }
         }
@@ -125,51 +125,60 @@ int selectSort(int n, PhoneBook arr[], int (*predicate)(PhoneBook *a, PhoneBook 
         arr[minInd] = temp;
         M += 3;
     }
+    printf("\n");
 
     return (M + C);
 }
 
-int compareByLastAndFirstName(PhoneBook *a, PhoneBook *b) {
+int lessByLastAndFirstName(PhoneBook *a, PhoneBook *b) {
     int lastnameComparison = strcmp(a->lastname, b->lastname);
 
-    if (lastnameComparison != 0) {
-        return lastnameComparison;
+    if (lastnameComparison < 0) {
+        return 1;
+    } else if (lastnameComparison > 0) {
+        return 0;
     } else {
         int firstnameComparison = strcmp(a->firstname, b->firstname);
-        return firstnameComparison;
+        return firstnameComparison < 0;
     }
 }
 
-int compareByLastAndFirstNameDescending(PhoneBook *a, PhoneBook *b) {
-    int lastnameComparison = strcmp(b->lastname, a->lastname);
+int greaterByLastAndFirstName(PhoneBook *a, PhoneBook *b) {
+    int lastnameComparison = strcmp(a->lastname, b->lastname);
 
-    if (lastnameComparison != 0) {
-        return lastnameComparison;
+    if (lastnameComparison > 0) {
+        return 1;
+    } else if (lastnameComparison < 0) {
+        return 0;
     } else {
-        int firstnameComparison = strcmp(b->firstname, a->firstname);
-        return firstnameComparison;
+        int firstnameComparison = strcmp(a->firstname, b->firstname);
+        return firstnameComparison > 0;
     }
 }
 
-int compareByFirstAndLastName(PhoneBook *a, PhoneBook *b) {
+int lessByFirstAndLastName(PhoneBook *a, PhoneBook *b) {
     int firstnameComparison = strcmp(a->firstname, b->firstname);
     
-    if (firstnameComparison != 0) {
-        return firstnameComparison;
+    if (firstnameComparison < 0) {
+        return 1;
+    } else if (firstnameComparison > 0) {
+        return 0;
     } else {
         int lastnameComparison = strcmp(a->lastname, b->lastname);
-        return lastnameComparison;
+        return lastnameComparison < 0;
     }
 }
 
-int compareByFirstAndLastNameDescending(PhoneBook *a, PhoneBook *b) {
-    int firstnameComparison = strcmp(b->firstname, a->firstname);
+int greaterByFirstAndLastName(PhoneBook *a, PhoneBook *b) {
+    int firstnameComparison = strcmp(a->firstname, b->firstname);
     
-    if (firstnameComparison != 0) {
-        return firstnameComparison;
+    if (firstnameComparison > 0) {
+        return 1;
+    } else if (firstnameComparison < 0) {
+        return 0;
     } else {
-        int lastnameComparison = strcmp(b->lastname, a->lastname);
-        return lastnameComparison;
+        int lastnameComparison = strcmp(a->lastname, b->lastname);
+        return lastnameComparison > 0;
     }
 }
 
@@ -212,7 +221,7 @@ void main() {
 
     printf("Оригинальная книга: \n\n");
     PrintPhoneBook(MAX_RECORDS, phoneBook);
-    selectSort(MAX_RECORDS, phoneBook, compareByLastAndFirstName);
+    selectSort(MAX_RECORDS, phoneBook, lessByLastAndFirstName);
     printf("\nОтсортированная книга: \n\n");
     PrintPhoneBook(MAX_RECORDS, phoneBook);
     int ind = 0;
