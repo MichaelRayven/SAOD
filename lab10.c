@@ -375,8 +375,8 @@ int HeapSort(int n, int A[]) {
     return M + buildT;
 }
 
-Data QuickSortPart(int A[], int L, int R, int (*selectPivot)(int A[], int L, int R)) {
-    int x = selectPivot(A, L, R), i = L, j = R;
+Data QuickSortV1(int A[], int L, int R) {
+    int x = A[L], i = L, j = R;
     Data data = {0, 0, 0};
     data.M = 1;
     data.depth = 1;
@@ -405,14 +405,14 @@ Data QuickSortPart(int A[], int L, int R, int (*selectPivot)(int A[], int L, int
     }
 
     if (L < j) {
-        Data d = QuickSortPart(A, L, j, selectPivot);
-        data.depth += d.depth;
+        Data d = QuickSortV1(A, L, j);
+        data.depth = d.depth + 1;
         data.C += d.C;
         data.M += d.M;
     }
     if (i < R) {
-        Data d = QuickSortPart(A, i, R, selectPivot);
-        data.depth += d.depth;
+        Data d = QuickSortV1(A, i, R);
+        data.depth = d.depth + 1;
         data.C += d.C;
         data.M += d.M;
     }
@@ -420,31 +420,71 @@ Data QuickSortPart(int A[], int L, int R, int (*selectPivot)(int A[], int L, int
     return data;
 }
 
-int SelectPivotV1(int A[], int L, int R) {
-    return A[L];
+Data QuickSortV2(int A[], int L, int R) {
+    Data data = {0, 0, 0};
+    data.depth = 1;
+
+    while(L<R) {
+        int x = A[L], i = L, j = R;
+        data.M += 1;
+    while (i <= j) {
+        data.C++;
+        while (A[i] < x) {
+            data.C++;
+            i++;
+        }
+        data.C++;
+        while (A[j] > x) {
+            data.C++;
+            j--;
+        }
+
+        if (i <= j) {
+            int temp = A[i];
+            A[i] = A[j];
+            A[j] = temp;
+            data.C += 3;
+
+            i++;
+            j--;
+        }
+    }
+
+    if (j - L < R - j) {
+        Data d = QuickSortV2(A, L, j);
+        data.depth = d.depth + 1;
+        data.C += d.C;
+        data.M += d.M;
+        L = i;
+    } else {
+        Data d = QuickSortV2(A, i, R);
+        data.depth = d.depth + 1;
+        data.C += d.C;
+        data.M += d.M;
+        R = j;
+    }
 }
 
-int SelectPivotV2(int A[], int L, int R) {
-    return A[(L + R) / 2];
+    return data;
 }
 
-int QuickSortV1(int n, int A[]) {
-    Data data = QuickSortPart(A, 0, n - 1, SelectPivotV1);
+int QuickSortV1Wrapper(int n, int A[]) {
+    Data data = QuickSortV1(A, 0, n - 1);
     return data.C + data.M;
 }
 
-int QuickSortV2(int n, int A[]) {
-    Data data = QuickSortPart(A, 0, n - 1, SelectPivotV2);
+int QuickSortV2Wrapper(int n, int A[]) {
+    Data data = QuickSortV2(A, 0, n - 1);
     return data.C + data.M;
 }
 
 
 int main() {
     printf("Heap sort tests:\n");
-    RunTests(QuickSortV1);
+    RunTests(QuickSortV1Wrapper);
 
     printf("\nQuickSort time complexity:\n\n");
-    PrintTimeTable(QuickSortV1);
+    PrintTimeTable(QuickSortV1Wrapper);
 
     // Compare quick sorts with different pivots
     printf("\nCompare QuickSort1 with QuickSort2:\n\n");
@@ -463,18 +503,18 @@ int main() {
 
         FillDec(n, A);
         CopyMas(n, A, B);
-        int Tdec1 = QuickSortV1(n, A);
-        int Tdec2 = QuickSortV2(n, A);
+        int Tdec1 = QuickSortV1(A, 0, n - 1).depth;
+        int Tdec2 = QuickSortV2(A, 0, n - 1).depth;
         
         FillRand(n, A);
         CopyMas(n, A, B);
-        int Trand1 = QuickSortV1(n, A);
-        int Trand2 = QuickSortV2(n, A);
+        int Trand1 = QuickSortV1(A, 0, n - 1).depth;
+        int Trand2 = QuickSortV2(A, 0, n - 1).depth;
         
         FillInc(n, A);
         CopyMas(n, A, B);
-        int Tinc1 = QuickSortV1(n, A);
-        int Tinc2 = QuickSortV2(n, A);
+        int Tinc1 = QuickSortV1(A, 0, n - 1).depth;
+        int Tinc2 = QuickSortV2(A, 0, n - 1).depth;
 
         printf("| %3d | %6d | %9d | %6d | %6d | %9d | %6d |\n", n, Tdec1, Trand1, Tinc1, Tdec2, Trand2, Tinc2);
 
@@ -483,7 +523,7 @@ int main() {
     }
 
 
-    int (*functions[])(int, int[]) = {ShellSort, HeapSort, QuickSortV2};
+    int (*functions[])(int, int[]) = {ShellSort, HeapSort, QuickSortV2Wrapper};
     char* functionNames[] = {"ShellSort", "HeapSort", "QuickSort"};
     int n = sizeof(functionNames) / sizeof(functionNames[0]);
     MakeGraph(n, functions, functionNames, 15, 100000);
