@@ -1,0 +1,1 @@
+/usr/bin/cc CMakeFiles/hello.dir/graph.c.o CMakeFiles/hello.dir/lab3.c.o -o hello  -Wl,-rpath,/mnt/c/Users/Michael/Documents/Projects/SAOD/build libSDL3_ttf.so.0.1.2 libSDL3.so.0.2.4 

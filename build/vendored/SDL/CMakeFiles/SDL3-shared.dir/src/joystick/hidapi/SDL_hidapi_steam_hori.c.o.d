@@ -1,0 +1,10 @@
+vendored/SDL/CMakeFiles/SDL3-shared.dir/src/joystick/hidapi/SDL_hidapi_steam_hori.c.o: \
+ /mnt/c/Users/Michael/Documents/Projects/SAOD/vendored/SDL/src/joystick/hidapi/SDL_hidapi_steam_hori.c \
+ /usr/include/stdc-predef.h \
+ /mnt/c/Users/Michael/Documents/Projects/SAOD/vendored/SDL/src/SDL_internal.h \
+ /mnt/c/Users/Michael/Documents/Projects/SAOD/vendored/SDL/src/joystick/hidapi/../SDL_sysjoystick.h \
+ /mnt/c/Users/Michael/Documents/Projects/SAOD/vendored/SDL/src/joystick/hidapi/../SDL_joystick_c.h \
+ /mnt/c/Users/Michael/Documents/Projects/SAOD/vendored/SDL/src/joystick/hidapi/SDL_hidapijoystick_c.h \
+ /mnt/c/Users/Michael/Documents/Projects/SAOD/vendored/SDL/src/joystick/hidapi/../usb_ids.h \
+ /mnt/c/Users/Michael/Documents/Projects/SAOD/vendored/SDL/src/joystick/hidapi/SDL_hidapi_rumble.h \
+ /mnt/c/Users/Michael/Documents/Projects/SAOD/vendored/SDL/src/joystick/hidapi/../SDL_joystick_c.h

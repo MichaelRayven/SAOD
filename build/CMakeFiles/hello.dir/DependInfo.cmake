@@ -1,0 +1,22 @@
+
+# Consider dependencies only in project.
+set(CMAKE_DEPENDS_IN_PROJECT_ONLY OFF)
+
+# The set of languages for which implicit dependencies are needed:
+set(CMAKE_DEPENDS_LANGUAGES
+  )
+
+# The set of dependency files which are needed:
+set(CMAKE_DEPENDS_DEPENDENCY_FILES
+  "/mnt/c/Users/Michael/Documents/Projects/SAOD/graph.c" "CMakeFiles/hello.dir/graph.c.o" "gcc" "CMakeFiles/hello.dir/graph.c.o.d"
+  "/mnt/c/Users/Michael/Documents/Projects/SAOD/lab3.c" "CMakeFiles/hello.dir/lab3.c.o" "gcc" "CMakeFiles/hello.dir/lab3.c.o.d"
+  )
+
+# Targets to which this target links.
+set(CMAKE_TARGET_LINKED_INFO_FILES
+  "/mnt/c/Users/Michael/Documents/Projects/SAOD/build/vendored/SDL_ttf/CMakeFiles/SDL3_ttf-shared.dir/DependInfo.cmake"
+  "/mnt/c/Users/Michael/Documents/Projects/SAOD/build/vendored/SDL/CMakeFiles/SDL3-shared.dir/DependInfo.cmake"
+  )
+
+# Fortran module output directory.
+set(CMAKE_Fortran_TARGET_MODULE_DIR "")

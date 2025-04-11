@@ -1,0 +1,1 @@
+/usr/bin/cc CMakeFiles/saod.dir/lab6.c.o -o saod  -Wl,-rpath,/mnt/c/Users/Michael/Documents/Projects/SAOD/build graph/libgraph.a -lm libSDL3_ttf.so.0.1.2 libSDL3.so.0.2.4 
