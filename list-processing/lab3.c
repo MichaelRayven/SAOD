@@ -44,10 +44,10 @@ void FillStackDec(tLE **head, int n) {
   }
 }
 
-void FillStackRand(tLE **head, int n) {
+void FillStackRand(tLE **head, int n, int max) {
   srand(time(NULL));
   for (int i = 0; i < n; i++) {
-    AddToStack(head, rand() % 100);
+    AddToStack(head, rand() % max);
   }
 }
 
@@ -154,44 +154,148 @@ void PrintListBackwardsRecursive(tLE *head) {
   printf("%d ", head->data.value);
 }
 
-// L - size of data in bytes
-void DigitalSort(tLE *S, int L) {
-  tQueue queues[256];
-  tLE *p;
+int DigitalSort(tLE **S, int L, int reverse) {
+  // L - size of data in bytes
+  // KDI (Key Digit Index) - order of bytes to sort
+  int *KDI = (int *)malloc(sizeof(int) * L);
+  for (int i = 0; i < L; i++) {
+    // KDI[i] = L - (i + 1);
+    KDI[i] = i;
+  }
+
+  int moves = 0;
+  tQueue q[256];
+  tLE *p, *temp;
+  unsigned char d;
   for (int j = 0; j < L; j++) {
     for (int i = 0; i < 256; i++) {
-      InitializeQueue(&queues[i]);
+      InitializeQueue(&q[i]);
     }
-    p = S;
+    p = *S;
     while (p != NULL) {
-      unsigned char d = p->data.digit[j];
-      queues[d].tail->next = p;
-      queues[d].tail = p;
+      moves++;
+      d = p->data.digit[KDI[j]];
+      q[d].tail->next = p;
+      q[d].tail = p;
       p = p->next;
     }
-    p = S;
-    for (int i = 0; i < 256; i++) {
-      if (queues[i].tail != queues[i].head) {
-        p->next = queues[i].head;
-        p = queues[i].tail;
+    p = temp = (tLE *)S;
+
+    if (reverse) {
+      // Merge queues in descending order
+      for (int i = 255; i >= 0; i--) {
+        if (q[i].tail != (tLE *)&(q[i].head)) {
+          moves++;
+          p->next = q[i].head;
+          p = q[i].tail;
+        }
+      }
+    } else {
+      // Merge queues in ascending order
+      for (int i = 0; i < 256; i++) {
+        if (q[i].tail != (tLE *)&(q[i].head)) {
+          moves++;
+          p->next = q[i].head;
+          p = q[i].tail;
+        }
       }
     }
+
     p->next = NULL;
+    (*S) = temp->next;
   }
+
+  return moves;
 }
 
 int main() {
-  int n = 32;
+  int n = 10;
   int m = 0;
 
   tLE *stack = NULL, *a = NULL, *b = NULL;
 
   printf(ANSI_COLOR_GREEN "Random list (size %d): \n" ANSI_COLOR_RESET, n);
-  FillStackRand(&stack, n);
+  FillStackRand(&stack, n, 100);
   PrintList(stack);
   printf("Checksum: %d, series: %d\n", CheckSum(stack), RunNumber(stack));
 
   printf("\n");
 
+  int Mtheor = 4 * (n + 256), Mfact = 0;
+  printf(ANSI_COLOR_GREEN "Digital sort: \n" ANSI_COLOR_RESET);
+  Mfact = DigitalSort(&stack, 4, 0);
+
+  printf(ANSI_COLOR_GREEN
+         "\nDigital sort complexity: " ANSI_COLOR_CYAN
+         "theoretical M = %d, factual M = %d\n" ANSI_COLOR_RESET,
+         Mtheor, Mfact);
+  PrintList(stack);
+  printf("Checksum: %d, series: %d\n", CheckSum(stack), RunNumber(stack));
+
+  printf("\n");
+
+  // 2-byte integer array
+  stack = NULL;
+  FillStackRand(&stack, n, 32767);
+  printf(ANSI_COLOR_GREEN
+         "Random 2-byte integer list (size %d): \n" ANSI_COLOR_RESET,
+         n);
+  PrintList(stack);
+
+  DigitalSort(&stack, 2, 0);
+  printf(ANSI_COLOR_GREEN
+         "2-byte integer list ascending order: \n" ANSI_COLOR_RESET);
+  PrintList(stack);
+
+  DigitalSort(&stack, 2, 1);
+  printf(ANSI_COLOR_GREEN
+         "2-byte integer list descending order: \n" ANSI_COLOR_RESET);
+  PrintList(stack);
+
+  printf("\n");
+  // 4-byte integer array
+  stack = NULL;
+  FillStackRand(&stack, n, 2147483647);
+  printf(ANSI_COLOR_GREEN
+         "Random 4-byte integer list (size %d): \n" ANSI_COLOR_RESET,
+         n);
+  PrintList(stack);
+
+  DigitalSort(&stack, 4, 0);
+  printf(ANSI_COLOR_GREEN
+         "4-byte integer list ascending order: \n" ANSI_COLOR_RESET);
+  PrintList(stack);
+
+  DigitalSort(&stack, 4, 1);
+  printf(ANSI_COLOR_GREEN
+         "4-byte integer list descending order: \n" ANSI_COLOR_RESET);
+  PrintList(stack);
+
+  // Time table for DigitalSort
+  printf("|   N   |        M      |              Mfact              |\n");
+  printf("|       |     Theor.    |   Dec.   |   Rand.   |   Inc.   |\n");
+  for (int j = 100; j <= 500; j += 100) {
+    int Ttheor = 4 * (j + 256);
+
+    ClearList(stack);
+    stack = NULL;
+    FillStackRand(&stack, j, 1000);
+    Mfact = DigitalSort(&stack, 4, 0);
+    int Trand = Mfact;
+
+    ClearList(stack);
+    stack = NULL;
+    FillStackInc(&stack, j);
+    Mfact = DigitalSort(&stack, 4, 0);
+    int Tinc = Mfact;
+
+    ClearList(stack);
+    stack = NULL;
+    FillStackDec(&stack, j);
+    Mfact = DigitalSort(&stack, 4, 0);
+    int Tdec = Mfact;
+
+    printf("| %5d | %13d | %8d | %9d | %8d |\n", j, Ttheor, Tdec, Trand, Tinc);
+  }
   return 0;
 }
